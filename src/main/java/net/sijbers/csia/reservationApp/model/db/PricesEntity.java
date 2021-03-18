@@ -16,9 +16,9 @@ public class PricesEntity implements Serializable{
 	private static final long serialVersionUID = 2148377515497956068L;
 	
 	@Id
-	@GeneratedValue(generator = "request-generator")
+	@GeneratedValue(generator = "prices-generator")
 	@GenericGenerator(
-			name= "request-generator",
+			name= "prices-generator",
 			strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
 			parameters = {
 					@Parameter(name= "sequence_name", value = "sequencePrice"),
@@ -48,5 +48,3 @@ public class PricesEntity implements Serializable{
 		this.price = price;
 	}
 }
-	
-
