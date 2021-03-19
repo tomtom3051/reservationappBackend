@@ -38,6 +38,33 @@ public class ReservationController {
 	@Autowired
 	ReservationService reservationService;
 	
+	
+	@RolesAllowed("admin")
+	@ApiOperation("change status requests")
+	@RequestMapping(value="/api/admin/newStatus/{requestID}/{status}" , method = RequestMethod.GET)
+	public Reservation changeStatus(
+			@ApiParam(
+					name = "requestID",
+					type = "number",
+					value = "id of the reservation Request",
+					example = "1",
+					required = true
+					) 
+			@PathVariable(name="requestID") long requestID,
+			@ApiParam(
+					name = "status",
+					type = "string",
+					value = "new status of the reservation Request",
+					example = "cancel",
+					required = true
+			) 
+			@PathVariable(name="status") String status)
+	{
+		logger.info("requestID: {}, status: {}",requestID,status);
+		return reservationService.changeStatus(requestID,status);
+	}
+
+	
 	@RolesAllowed("user")
 	@ApiOperation("post reservation request")
 	@RequestMapping(value="/api/requestReservation" , method = RequestMethod.POST)
@@ -102,36 +129,10 @@ public class ReservationController {
 		logger.info("getReservations4User");
 		return reservationService.getReservations4User(getUserName(authenticationToken));
 	}
-	
-	@RolesAllowed("admin")
-	@ApiOperation("change status requests")
-	@RequestMapping(value="/api/admin/newStatus/{requestID}/{status}" , method = RequestMethod.GET)
-	public Reservation changeStatus(
-			@ApiParam(
-					name = "requestID",
-					type = "number",
-					value = "id of the reservation Request",
-					example = "1",
-					required = true
-					) 
-			@PathVariable(name="requestID") long requestID,
-			@ApiParam(
-					name = "status",
-					type = "string",
-					value = "new status of the reservation Request",
-					example = "cancel",
-					required = true
-			) 
-			@PathVariable(name="status") String status)
-	{
-		logger.info("requestID: {}, status: {}",requestID,status);
-		return reservationService.changeStatus(requestID,status);
-	}
 
 	private String getUserName(KeycloakAuthenticationToken authenticationToken) {
 		SimpleKeycloakAccount account = (SimpleKeycloakAccount) authenticationToken.getDetails();	
 		AccessToken token = account.getKeycloakSecurityContext().getToken();
-		//String clientUserName = token.getPreferredUsername();
 		return token.getPreferredUsername();
 	}
 

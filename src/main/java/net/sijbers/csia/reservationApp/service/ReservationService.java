@@ -102,8 +102,8 @@ public class ReservationService {
 		requesterBody += reservationRequest.getReservationDate();
 		requesterBody += " has been received.\n\n You will hear from us shortly\n\nThe Reservation App";	
 		
-	//	emailService.SendEmailSSL2F(adminEmail, "New Reservation Request", adminBody);
-	//	emailService.SendEmailSSL2F(userName, "New Reservation Request", requesterBody);		
+		emailService.SendEmailSSL2F(adminEmail, "New Reservation Request", adminBody);
+		emailService.SendEmailSSL2F(userName, "New Reservation Request", requesterBody);		
 	}
 	
 	private int getPrice(String priceType) {
