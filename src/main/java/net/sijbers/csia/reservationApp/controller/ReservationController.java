@@ -28,6 +28,7 @@ import net.sijbers.csia.reservationApp.service.ReservationService;
 
 
 @RestController
+//@RequestMapping("/reservations")
 @Api(tags="Reservation App Rest Calls")
 public class ReservationController {
 	private static final Logger logger = LoggerFactory.getLogger(ReservationController.class);
