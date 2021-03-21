@@ -239,7 +239,7 @@ public class ReservationService {
 				requesterBody += status;
 				requesterBody += "\n\nHave a nice day\n\nThe Reservation App";
 	
-		//		emailService.SendEmailSSL2F(reservationRecord.getClientID(), "New Reservation Request", requesterBody);
+				emailService.SendEmailSSL2F(reservationRecord.getClientID(), "New Reservation Request", requesterBody);
 
 			}
 		}
