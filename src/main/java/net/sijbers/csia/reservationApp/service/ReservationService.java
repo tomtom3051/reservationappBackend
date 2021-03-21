@@ -115,6 +115,7 @@ public class ReservationService {
 	}
 	
 	public Reservation requestReservation(String userName, ReservationRequest reservationRequest) {
+		logger.info("1");
 		//todo: check if there is already a APPROVED reservation on that date
 		ReservationEntity reservationRecord = new ReservationEntity();
 		reservationRecord.setClientID(userName);
@@ -132,10 +133,11 @@ public class ReservationService {
 			totalPrice += getPrice("cleanUpPrice");
 		}
 		reservationRecord.setPrice(totalPrice);
-		
+		logger.info("2");
 		sendRequestConfirmations(userName,reservationRequest);
-		
+		logger.info("3");
 		reservationRepository.save(reservationRecord);
+		logger.info("4");
 						
 		return reservationEntityDAO(reservationRecord);
 	}
