@@ -2,9 +2,14 @@ package net.sijbers.csia.reservationApp.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import java.util.Properties;
+import java.util.concurrent.Executor;
+
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -26,8 +31,36 @@ public class EmailService {
 	@Value("${gmail.smtpport}")
 	String gmailSMTPPort;
 	
+	@Autowired
+	@Qualifier("threadPoolTaskExecutor")
+	Executor threadPoolTaskExecutor;
 	
 	
+	public void startMailerThread(String emailTO, String subject, String messageBody) {
+		//ThreadPoolExecutor mailerThreadPool  = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
+		threadPoolTaskExecutor.execute(() -> {
+			//wachteffe();
+			SendEmailSSL2F(emailTO,subject, messageBody );
+		});
+		
+	}
+	/*
+    private void wachteffe() {
+        int i = 0;
+        while (i<10) {
+        	logger.info("New Thread is running..." + i++);
+            try {
+                //Wait for one sec so it doesn't print too fast
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    */
+    
+    
+    
 
 	public void SendEmailTLS() {
 		final String username = "unifi@sijbers.net";
@@ -120,7 +153,7 @@ public class EmailService {
 
 			Transport.send(message);
 
-			logger.debug("mail sent");
+			logger.info("mail sent to {}", emailTO);
 
 		} catch (MessagingException e) {
 			e.printStackTrace();

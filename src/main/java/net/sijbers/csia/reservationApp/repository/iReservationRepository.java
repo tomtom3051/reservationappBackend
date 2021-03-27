@@ -16,6 +16,11 @@ public interface iReservationRepository extends JpaRepository<ReservationEntity,
 	
 	public List<ReservationEntity> findByClientIDAndStatus(String clientID, String status);
 	
+	public List<ReservationEntity> findByIdAndClientID(long id, String clientID);
+	
+	
+	
+	
 	
 	@Query(	value="select * from reservations "
 			+ "where reservation_date>=:startDate "

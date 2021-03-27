@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import net.sijbers.csia.reservationApp.model.Reservation;
@@ -40,9 +39,18 @@ public class ReservationService {
 	
 	@Value("${admin.email}")
 	String adminEmail;
+	
+	@Value("${spring.profiles.active}")
+	private String environment;
+	
+	
+	public String getEnvironment() {
+		logger.info("environment: {}", environment);		
+		return environment;
+	}
 			
 	
-	public String IamUp() {
+	public String testThread() {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
 		long now = cal.getTimeInMillis();
@@ -54,6 +62,9 @@ public class ReservationService {
 		logger.info("epoch: {}", secondsFromEpoch);
 		logger.info("date: {}", new Date());
 		logger.info("adminEmail: {}", adminEmail);
+		
+		
+		emailService.startMailerThread("frank@sijbers.net", "test", "TestMessage");
 		
 		return "alive";
 	}
@@ -85,7 +96,6 @@ public class ReservationService {
 		return  getAllPrices() ;
 	}
 	
-	@Async
 	private void sendRequestConfirmations(String userName, ReservationRequest reservationRequest)  {
 		String adminBody = "Dear admin \n\n";
 		adminBody += "There is a new reservation request at ";
@@ -102,8 +112,8 @@ public class ReservationService {
 		requesterBody += reservationRequest.getReservationDate();
 		requesterBody += " has been received.\n\n You will hear from us shortly\n\nThe Reservation App";	
 		
-		emailService.SendEmailSSL2F(adminEmail, "New Reservation Request", adminBody);
-		emailService.SendEmailSSL2F(userName, "New Reservation Request", requesterBody);		
+		emailService.startMailerThread(adminEmail, "New Reservation Request", adminBody);
+		emailService.startMailerThread(userName, "New Reservation Request", requesterBody);		
 	}
 	
 	private int getPrice(String priceType) {
@@ -220,6 +230,18 @@ public class ReservationService {
 		return reservations;
 	}
 	
+	public Reservation cancelRequest(long requestID,String clientID) {
+		List<ReservationEntity> reservations = reservationRepository.findByIdAndClientID(requestID,clientID );
+		if (reservations.size()==1) {
+			logger.info("cancelene");
+			ReservationEntity reservationRecord = reservations.get(0);
+			reservationRecord.setStatus("cancel");
+			reservationRepository.save(reservationRecord);
+			return reservationEntityDAO(reservationRecord);
+		}
+		return null;
+	}
+	
 	public Reservation changeStatus(long requestID,String status) {
 		//todo: who is allowed to change to which status
 		//todo: respect order of statemachine	
@@ -239,8 +261,7 @@ public class ReservationService {
 				requesterBody += status;
 				requesterBody += "\n\nHave a nice day\n\nThe Reservation App";
 	
-				emailService.SendEmailSSL2F(reservationRecord.getClientID(), "New Reservation Request", requesterBody);
-
+				emailService.startMailerThread(reservationRecord.getClientID(), "Reservation Request Updated", requesterBody);
 			}
 		}
 		return reservationEntityDAO(reservationRecord);

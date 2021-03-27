@@ -64,6 +64,26 @@ public class ReservationController {
 		logger.info("requestID: {}, status: {}",requestID,status);
 		return reservationService.changeStatus(requestID,status);
 	}
+	
+	
+	@RolesAllowed("user")
+	@ApiOperation("change status requests")
+	@RequestMapping(value="/api/admin/cancel/{requestID}" , method = RequestMethod.GET)
+	public Reservation cancelRequest(
+			KeycloakAuthenticationToken authenticationToken,
+			@ApiParam(
+					name = "requestID",
+					type = "number",
+					value = "id of the reservation Request",
+					example = "1",
+					required = true
+					) 
+			@PathVariable(name="requestID") long requestID)
+	{
+		logger.info("requestID: {}, username: {}",requestID,getUserName(authenticationToken));
+		return reservationService.cancelRequest(requestID,getUserName(authenticationToken));
+	}
+
 
 	
 	@RolesAllowed("user")

@@ -33,7 +33,15 @@ public class TestController {
 	@RequestMapping(value="/api/up" , method = RequestMethod.GET)
 	public String iAmUp() {
 		logger.info("i am up called");
-		return SharedTools.getSimpleJson(reservationService.IamUp()).toString();
+		return SharedTools.getSimpleJson(reservationService.getEnvironment()).toString();
+	}
+	
+	
+	@ApiOperation("test if app is working")
+	@RequestMapping(value="/api/thread" , method = RequestMethod.GET)
+	public String testThread() {
+		logger.info("testThread");
+		return SharedTools.getSimpleJson(reservationService.testThread()).toString();
 	}
 	
 	@RequestMapping(value = { "/mail/tls" }, method = RequestMethod.GET)

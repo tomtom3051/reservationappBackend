@@ -1,12 +1,12 @@
 package net.sijbers.csia.reservationApp;
 
 import java.util.Collections;
+import java.util.concurrent.Executor;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.EnableAsync;
-
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -21,7 +21,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @EnableSwagger2
-@EnableAsync
 public class ReservationAppApplication {
 
 	public static void main(String[] args) {
@@ -49,4 +48,16 @@ public class ReservationAppApplication {
                 Collections.emptyList()
         );
     } 
+    
+    @Bean(name = "threadPoolTaskExecutor")
+    public Executor threadPoolTaskExecutor() {
+    	ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    	executor.setCorePoolSize(5);
+    	executor.setMaxPoolSize(5);
+    	executor.setQueueCapacity(10);
+    	executor.setThreadNamePrefix("threadPoolTaskExecutor-");
+    	executor.initialize();
+    	return executor;
+    }	
+    
 }
